@@ -50,31 +50,32 @@ void makeChoice(){
      cout<<"1: FCFS\n2: Non-Preemptive-SJF\n3: Preemptive-SJF\n4: Non-Preemptive-Priority\n5: Preemptive-Priority\n6: Round-Robin\n7: Our-Proposed-Algorithm\n8: Compare-All\n9: Exit"<<endl;
    cout<<"Enter Your Choice: ";cin>>choice;
    switch(choice){
-   case 1:
+     case 1:
         FCFS();
         break;
-   case 2:
+     case 2:
         SJF();
         break;
-      case 3:
+     case 3:
         preemptiveSJF();
         break;
-      case 4:
+     case 4:
          prioritySchedeuling();
-      case 5:
+         break;
+     case 5:
         preemptivePriority();
         break;
-           case 6:
-          roundRobin();
+     case 6:
+        roundRobin();
         break;
-           case 7:
-          proposed();
+     case 7:
+        proposed();
         break;
-           case 8:
+     case 8:
         cout<<"fcfs"<<endl;
         break;
-           case 9:
-         exit(0);
+     case 9:
+        exit(0);
         break;
 
    }
@@ -92,8 +93,8 @@ int main(){
 
 void roundRobin(){
     ll n,tc,i,u,v,tq;
-ll arrival[500],waiting[500],turnaround[500],burst[500],finish[500];
-
+ll arrival[500],waiting[500],turnaround[500],burst[500],finish[500],response[500];
+  f(i,500) response[i]=500;
 
 vector<process>vct;
       cout<<"Enter The number Of Processes: ";cin>>n;
@@ -140,10 +141,13 @@ vector<process>vct;
       if(top.burst<=tq){
             if(flag==0){
         cout<<current<<" "<<"P"<<top.idx+1<<" "<<current+top.burst<<" ";
+          response[top.idx]=min(response[top.idx],current);
         flag=1;
             }
             else {
                 cout<<"P"<<top.idx+1<<" "<<current+top.burst<<" ";
+              response[top.idx]=min(response[top.idx],current);
+
             }
            finish[top.idx]=current+top.burst;
           Q.pop_front();
@@ -162,10 +166,14 @@ vector<process>vct;
       else{
         if(flag==0){
             cout<<current<<" "<<"P"<<top.idx+1<<" "<<current+tq<<" ";
+            response[top.idx]=min(response[top.idx],current);
+
             flag=1;
         }
         else {
             cout<<"P"<<top.idx+1<<" "<<current+tq<<" ";
+                      response[top.idx]=min(response[top.idx],current);
+
         }
         current+=tq;
         top.burst-=tq;
@@ -196,7 +204,8 @@ vector<process>vct;
             waiting[i]=turnaround[i]-burst[i];
             totalTurnaround+=turnaround[i];
             totalWaiting+=waiting[i];
-            cout<<"process P"<<i+1<<" End time: "<<finish[i]<<" Turn around Time: "<<turnaround[i]<<" Waiting time: "<<waiting[i]<<endl;
+                    cout<<"Process P"<<i+1<<" End Time: "<<finish[i]<<" Response Time: "<<response[i]<<" Waiting Time: "<<waiting[i]<<" Turnaround Time: "<<turnaround[i]<<endl;
+
          }
          cout<<"Average Turnaround Time: "<<totalTurnaround/n<<endl;
          cout<<"Average Waiting Time: "<<totalWaiting/n<<endl;
@@ -205,7 +214,8 @@ vector<process>vct;
 void prioritySchedeuling(){
     vector<job>vct;
 priority_queue<job>Q;
-ll i,u,v,w,n,taken=-1,current=0,finish[500],arrival[500],burst[500],turnaround[500],waiting[500],flag=0;
+ll response[500],i,u,v,w,n,taken=-1,current=0,finish[500],arrival[500],burst[500],turnaround[500],waiting[500],flag=0;
+      for(i=0;i<500;i++) response[i]=1000000000000;
      cout<<"Enter the number of processes: ";cin>>n;
         f(i,n){
             cout<<"Enter the Arrival Time of P"<<i+1<<": ";cin>>u;
@@ -247,10 +257,12 @@ ll i,u,v,w,n,taken=-1,current=0,finish[500],arrival[500],burst[500],turnaround[5
                 if(flag==0){
                     cout<<current<<" P"<<u.idx+1<<" "<<current+u.burst<<" ";
                     flag=1;
+                    response[u.idx]=min(current,response[u.idx]);
                     current+=u.burst;
                 }
                 else {
                     cout<<"P"<<u.idx+1<<" "<<current+u.burst<<" ";
+                    response[u.idx]=min(current,response[u.idx]);
                     current+=u.burst;
 
                 }
@@ -274,7 +286,7 @@ ll i,u,v,w,n,taken=-1,current=0,finish[500],arrival[500],burst[500],turnaround[5
            waiting[i]=turnaround[i]-burst[i];
            totalTurnaround+=turnaround[i];
            totalWaiting+=waiting[i];
-           cout<<"Process P"<<i+1<<": End Time: "<<finish[i]<<" Turnaround Time: "<<turnaround[i]<<" Waiting Time: "<<waiting[i]<<endl;
+        cout<<"Process P"<<i+1<<" End Time: "<<finish[i]<<" Response Time: "<<response[i]<<" Waiting Time: "<<waiting[i]<<" Turnaround Time: "<<turnaround[i]<<endl;
 
       }
       cout<<"Average waiting time: "<<totalWaiting/n<<endl;
@@ -346,7 +358,8 @@ float totalWaiting=0,totalTurnaround=0;
     cout<<endl;
 }
 void preemptivePriority(){
-    ll i,u,v,w,n,taken=-1,current=0,finish[500],arrival[500],burst[500],turnaround[500],waiting[500],flag=0;
+    ll response[500],i,u,v,w,n,taken=-1,current=0,finish[500],arrival[500],burst[500],turnaround[500],waiting[500],flag=0;
+    f(i,500) response[i]=1000000000000;
     vector<job>vct;
              cout<<"Enter the number of processes: ";cin>>n;
         f(i,n){
@@ -397,6 +410,8 @@ void preemptivePriority(){
                         else {
                             cout<<"P"<<u.idx+1<<" "<<current+mn<<" ";
                         }
+                      response[u.idx]=min(response[u.idx],current);
+
                         current+=mn;
                         u.burst-=mn;
                         Q.pop();
@@ -417,11 +432,14 @@ void preemptivePriority(){
                 if(flag==0){
                     cout<<current<<" P"<<u.idx+1<<" "<<current+u.burst<<" ";
                     flag=1;
+                    response[u.idx]=min(response[u.idx],current);
+
                     current+=u.burst;
                 }
                 else {
                     cout<<"P"<<u.idx+1<<" "<<current+u.burst<<" ";
-                    current+=u.burst;
+                response[u.idx]=min(response[u.idx],current);
+                current+=u.burst;
 
                 }
                 finish[u.idx]=current;
@@ -447,7 +465,7 @@ void preemptivePriority(){
            waiting[i]=turnaround[i]-burst[i];
            totalTurnaround+=turnaround[i];
            totalWaiting+=waiting[i];
-           cout<<"Process P"<<i+1<<": End Time: "<<finish[i]<<" Turnaround Time: "<<turnaround[i]<<" Waiting Time: "<<waiting[i]<<endl;
+        cout<<"Process P"<<i+1<<" End Time: "<<finish[i]<<" Response Time: "<<response[i]<<" Waiting Time: "<<waiting[i]<<" Turnaround Time: "<<turnaround[i]<<endl;
 
       }
       cout<<"Average waiting time: "<<totalWaiting/n<<endl;
@@ -588,12 +606,12 @@ void preemptiveSJF(){
 
                         if(flag==0){
                             cout<<current<<" P"<<u.idx+1<<" "<<current+mn<<" ";
-                             response[u.idx]=current;
+                             response[u.idx]=min(current,response[u.idx]);
                             flag=1;
                         }
                         else {
                             cout<<"P"<<u.idx+1<<" "<<current+mn<<" ";
-                            response[u.idx]=current;
+                            response[u.idx]=min(current,response[u.idx]);
                         }
                         current+=mn;
                         u.burst-=mn;
@@ -615,11 +633,14 @@ void preemptiveSJF(){
                 if(flag==0){
                     cout<<current<<" P"<<u.idx+1<<" "<<current+u.burst<<" ";
                     flag=1;
+                response[u.idx]=min(current,response[u.idx]);
+
                     current+=u.burst;
                 }
                 else {
                     cout<<"P"<<u.idx+1<<" "<<current+u.burst<<" ";
-                    current+=u.burst;
+                response[u.idx]=min(current,response[u.idx]);
+                current+=u.burst;
 
                 }
                 finish[u.idx]=current;
@@ -645,7 +666,7 @@ void preemptiveSJF(){
            waiting[i]=turnaround[i]-burst[i];
            totalTurnaround+=turnaround[i];
            totalWaiting+=waiting[i];
-           cout<<"Process P"<<i+1<<": End Time: "<<finish[i]<<" Turnaround Time: "<<turnaround[i]<<" Waiting Time: "<<waiting[i]<<endl;
+    cout<<"Process P"<<i+1<<" End Time: "<<finish[i]<<" Response Time: "<<response[i]<<" Waiting Time: "<<waiting[i]<<" Turnaround Time: "<<turnaround[i]<<endl;
 
       }
       cout<<"Average waiting time: "<<totalWaiting/n<<endl;
@@ -655,7 +676,7 @@ void preemptiveSJF(){
 }
 void proposed(){
     ll n,tc,i,u,v,tq;
-    ll arrival[500],waiting[500],turnaround[500],burst[500],finish[500],taken=-1,flag=0,current=0;
+    ll response[500],arrival[500],waiting[500],turnaround[500],burst[500],finish[500],taken=-1,flag=0,current=0;
         vector<job>vct;
          cout<<"Enter The number Of Processes: ";cin>>n;
       cout<<"Enter Time Quantum: ";cin>>tq;
@@ -696,10 +717,13 @@ void proposed(){
             if(top.burst<=tq){
             if(flag==0){
         cout<<current<<" "<<"P"<<top.idx+1<<" "<<current+top.burst<<" ";
+        response[top.idx]=min(current,response[top.idx]);
         flag=1;
             }
             else {
                 cout<<"P"<<top.idx+1<<" "<<current+top.burst<<" ";
+               response[top.idx]=min(current,response[top.idx]);
+
             }
            finish[top.idx]=current+top.burst;
           Q.pop();
@@ -718,10 +742,13 @@ void proposed(){
                 else{
         if(flag==0){
             cout<<current<<" "<<"P"<<top.idx+1<<" "<<current+tq<<" ";
+            response[top.idx]=min(current,response[top.idx]);
             flag=1;
         }
         else {
             cout<<"P"<<top.idx+1<<" "<<current+tq<<" ";
+            response[top.idx]=min(current,response[top.idx]);
+
         }
         current+=tq;
         top.burst-=tq;
@@ -749,7 +776,8 @@ cout<<"\n=======================================================================
                  waiting[i]=turnaround[i]-burst[i];
                   totalWaiting+=waiting[i];
                   totalTurnaround+=turnaround[i];
-            cout<<"process P"<<i+1<<" End time: "<<finish[i]<<" Turn around Time: "<<turnaround[i]<<" Waiting time: "<<waiting[i]<<endl;
+    cout<<"Process P"<<i+1<<" End Time: "<<finish[i]<<" Response Time: "<<response[i]<<" Waiting Time: "<<waiting[i]<<" Turnaround Time: "<<turnaround[i]<<endl;
+
          }
          cout<<"Average Turnaround Time: "<<totalTurnaround/n<<endl;
          cout<<"Average Waiting Time: "<<totalWaiting/n<<endl;
