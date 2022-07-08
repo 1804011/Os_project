@@ -285,7 +285,7 @@ ll i,u,v,w,n,taken=-1,current=0,finish[500],arrival[500],burst[500],turnaround[5
 void FCFS(){
     ll n,i,j,u,v;
     vector<process>vct;
-ll arrival[500],burst[600],waiting[500],turnaround[500],finish[500],flag=0,current=0,idle=0;
+ll arrival[500],burst[600],waiting[500],response[500],turnaround[500],finish[500],flag=0,current=0,idle=0;
 float totalWaiting=0,totalTurnaround=0;
     cout<<"Enter the number of processes: ";cin>>n;
     for(i=0;i<n;i++){
@@ -310,6 +310,7 @@ float totalWaiting=0,totalTurnaround=0;
                 cout<<"idle "<<vct[i].arrival<<" ";
             }
            cout<<"P"<<vct[i].idx+1<<" "<<vct[i].arrival+vct[i].burst<<" ";
+           response[vct[i].idx]=vct[i].arrival;
             current=vct[i].arrival+vct[i].burst;
             finish[vct[i].idx]=current;
        }
@@ -317,11 +318,13 @@ float totalWaiting=0,totalTurnaround=0;
             if(flag==0){
                 flag=1;
                 cout<<current<<" P"<<vct[i].idx+1<<" "<<current+vct[i].burst<<" ";
+               response[vct[i].idx]=current;
                 current+=vct[i].burst;
 
             }
             else {
                 cout<<"P"<<vct[i].idx+1<<" "<<current+vct[i].burst<<" ";
+                response[vct[i].idx]=current;
                 current+=vct[i].burst;
             }
             finish[vct[i].idx]=current;
@@ -332,7 +335,7 @@ float totalWaiting=0,totalTurnaround=0;
     f(i,n){
         turnaround[i]=finish[i]-arrival[i];
         waiting[i]=turnaround[i]-burst[i];
-        cout<<"Process P"<<i+1<<" End Time: "<<finish[i]<<" Turnaround Time: "<<turnaround[i]<<" Waiting Time: "<<waiting[i]<<endl;
+        cout<<"Process P"<<i+1<<" End Time: "<<finish[i]<<" Response Time: "<<response[i]<<" Waiting Time: "<<waiting[i]<<" Turnaround Time: "<<turnaround[i]<<endl;
         totalWaiting+=waiting[i];
         totalTurnaround+=turnaround[i];
 
@@ -453,7 +456,7 @@ void preemptivePriority(){
        cout<<"================================================================================================"<<endl;
 }
 void SJF(){
-    ll i,u,v,w,n,taken=-1,current=0,finish[500],arrival[500],burst[500],turnaround[500],waiting[500],flag=0;
+    ll response[500],i,u,v,w,n,taken=-1,current=0,finish[500],arrival[500],burst[500],turnaround[500],waiting[500],flag=0;
     vector<job>vct;
 priority_queue<job>Q;
             cout<<"Enter the number of processes: ";cin>>n;
@@ -498,11 +501,13 @@ priority_queue<job>Q;
                 Q.pop();
                 if(flag==0){
                     cout<<current<<" P"<<u.idx+1<<" "<<current+u.burst<<" ";
+                    response[u.idx]=current;
                     flag=1;
                     current+=u.burst;
                 }
                 else {
                     cout<<"P"<<u.idx+1<<" "<<current+u.burst<<" ";
+                    response[u.idx]=current;
                     current+=u.burst;
 
                 }
@@ -526,7 +531,7 @@ priority_queue<job>Q;
            waiting[i]=turnaround[i]-burst[i];
            totalTurnaround+=turnaround[i];
            totalWaiting+=waiting[i];
-           cout<<"Process P"<<i+1<<": End Time: "<<finish[i]<<" Turnaround Time: "<<turnaround[i]<<" Waiting Time: "<<waiting[i]<<endl;
+    cout<<"Process P"<<i+1<<" End Time: "<<finish[i]<<" Response Time: "<<response[i]<<" Waiting Time: "<<waiting[i]<<" Turnaround Time: "<<turnaround[i]<<endl;
 
       }
       cout<<"Average waiting time: "<<totalWaiting/n<<endl;
@@ -535,7 +540,8 @@ priority_queue<job>Q;
        cout<<"================================================================================================"<<endl;
 }
 void preemptiveSJF(){
-    ll i,u,v,w,n,taken=-1,current=0,finish[500],arrival[500],burst[500],turnaround[500],waiting[500],flag=0;
+    ll response[500],i,u,v,w,n,taken=-1,current=0,finish[500],arrival[500],burst[500],turnaround[500],waiting[500],flag=0;
+     for(ll i=0;i<500;i++) response[i]=1000000000000;
     vector<job>vct;
              cout<<"Enter the number of processes: ";cin>>n;
 
@@ -582,10 +588,12 @@ void preemptiveSJF(){
 
                         if(flag==0){
                             cout<<current<<" P"<<u.idx+1<<" "<<current+mn<<" ";
+                             response[u.idx]=current;
                             flag=1;
                         }
                         else {
                             cout<<"P"<<u.idx+1<<" "<<current+mn<<" ";
+                            response[u.idx]=current;
                         }
                         current+=mn;
                         u.burst-=mn;
