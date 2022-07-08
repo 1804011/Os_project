@@ -95,7 +95,7 @@ void roundRobin(){
 ll arrival[500],waiting[500],turnaround[500],burst[500],finish[500];
 
 
-vector<job>vct;
+vector<process>vct;
       cout<<"Enter The number Of Processes: ";cin>>n;
       cout<<"Enter Time Quantum: ";cin>>tq;
 
@@ -107,45 +107,50 @@ vector<job>vct;
        burst[i]=v;
 
       }
-      sort(vct.begin(),vct.end(),comp);
+      sort(vct.begin(),vct.end(),fcfs);
 
 
     //  }
-    deque<job>Q;
+    deque<process>Q;
 
    // Q.push_front(vct[0]);
    cout<<"=========================================="<<endl;
    cout<<"Gantt Chart"<<endl;
-    ll time=vct[0].arrival;
+    ll current=vct[0].arrival;
     ll taken=-1;
     ll flag=0;
     ll sz=vct.size();
+    ll idle=0;
   while(taken<n-1){
         taken++;
         Q.push_front(vct[taken]);
-        time=vct[taken].arrival;
-        if(flag==0&&time){
+        ll t=vct[taken].arrival;
+        if(flag==0&&t){
             cout<<0<<" "<<"idle ";
+            idle+=t;
         }
-        else if(time)
-            cout<<"idle "<<time<<" ";
+        else if(t)
+            {cout<<"idle "<<t<<" ";
+            idle+=t-current;
+            }
+            current=t;
 
     while(!Q.empty()){
-      job top=Q.front();
+      process top=Q.front();
       if(top.burst<=tq){
             if(flag==0){
-        cout<<time<<" "<<"P"<<top.idx+1<<" "<<time+top.burst<<" ";
+        cout<<current<<" "<<"P"<<top.idx+1<<" "<<current+top.burst<<" ";
         flag=1;
             }
             else {
-                cout<<"P"<<top.idx+1<<" "<<time+top.burst<<" ";
+                cout<<"P"<<top.idx+1<<" "<<current+top.burst<<" ";
             }
-           finish[top.idx]=time+top.burst;
+           finish[top.idx]=current+top.burst;
           Q.pop_front();
-          time+=top.burst;
+          current+=top.burst;
 
                  for(i=taken+1;i<sz;i++){
-        if(vct[i].arrival<=time){
+        if(vct[i].arrival<=current){
                     taken++;
                     Q.pb(vct[i]);
 
@@ -156,17 +161,17 @@ vector<job>vct;
       }
       else{
         if(flag==0){
-            cout<<time<<" "<<"P"<<top.idx+1<<" "<<time+tq<<" ";
+            cout<<current<<" "<<"P"<<top.idx+1<<" "<<current+tq<<" ";
             flag=1;
         }
         else {
-            cout<<"P"<<top.idx+1<<" "<<time+tq<<" ";
+            cout<<"P"<<top.idx+1<<" "<<current+tq<<" ";
         }
-        time+=tq;
+        current+=tq;
         top.burst-=tq;
         Q.pop_front();
                for(i=taken+1;i<sz;i++){
-        if(vct[i].arrival<=time){
+        if(vct[i].arrival<=current){
                     taken++;
                     Q.pb(vct[i]);
 
@@ -185,10 +190,17 @@ vector<job>vct;
     }
   }
      cout<<"\n=========================================="<<endl;
-
+     float totalWaiting=0,totalTurnaround=0;
          for(i=0;i<n;i++){
-            cout<<"process P"<<i+1<<" End time: "<<finish[i]<<" Turn around Time: "<<finish[i]-arrival[i]<<" Waiting time: "<<finish[i]-arrival[i]-burst[i]<<endl;
+            turnaround[i]=finish[i]-arrival[i];
+            waiting[i]=turnaround[i]-burst[i];
+            totalTurnaround+=turnaround[i];
+            totalWaiting+=waiting[i];
+            cout<<"process P"<<i+1<<" End time: "<<finish[i]<<" Turn around Time: "<<turnaround[i]<<" Waiting time: "<<waiting[i]<<endl;
          }
+         cout<<"Average Turnaround Time: "<<totalTurnaround/n<<endl;
+         cout<<"Average Waiting Time: "<<totalWaiting/n<<endl;
+         cout<<"Idle Time: "<<idle<<endl;
 }
 void prioritySchedeuling(){
     vector<job>vct;
